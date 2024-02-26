@@ -3,8 +3,9 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+#include "titanic.h"
 
-typedef std::vector<std::vector<std::string>> matrix;
 
 matrix readCsv(const std::string &path) {
     std::ifstream file(path);
@@ -54,5 +55,46 @@ void fillNan(matrix& data, int c){
         if (data[i][c].empty()) {
             data[i][c] = median;
         }
+    }
+}
+
+void Passenger::setImportant(){
+    value = getImportant(age, pclass, sex);
+}
+
+bool compP(const Passenger& first, const Passenger& second){
+    return first.value > second.value;
+}
+boatVector fillBoats(const matrix& data, size_t nboats, size_t nseats){
+    std::vector<Passenger> passengers;
+    for (size_t i = 1; i < data.size(); i++){
+        std::vector<std::string> row = data[i]; 
+        Passenger p = {std::stoul(row[Columns::PassengerId]),
+         row[Columns::Name],
+          row[Columns::Sex],
+           std::stoi(row[Columns::Pclass]),
+           std::stoi(row[Columns::Age])};
+        p.setImportant();
+        passengers.push_back(p);
+    }
+    std::sort(passengers.begin(), passengers.end(), compP);
+    boatVector boats;
+    for (size_t i=0; i<nboats; i++){
+        std::vector<Passenger> seats;
+        for (size_t j=0; j<nseats; j++){
+            seats.push_back(passengers[i*nseats+j]);
+        }
+        boats.push_back(seats);
+    }
+    return boats;
+}
+
+void printBoats(const boatVector& boats){
+    for (size_t i=0; i<boats.size(); i++){
+        std::cout << i << '\n';
+       std::vector<Passenger> passengers = boats[i];
+       for (const Passenger& x: passengers){
+        std::cout << x.id << '\t' << x.name << '\t' << x.value << '\n';
+       }
     }
 }
