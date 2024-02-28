@@ -65,6 +65,15 @@ void Passenger::setImportant(){
 bool compP(const Passenger& first, const Passenger& second){
     return first.value > second.value;
 }
+
+bool Passenger::operator < (const Passenger& p) const {
+    return value < p.value;
+}
+
+bool Passenger::operator > (const Passenger& p) const {
+    return value > p.value;
+}
+
 boatVector fillBoats(const matrix& data, size_t nboats, size_t nseats){
     std::vector<Passenger> passengers;
     for (size_t i = 1; i < data.size(); i++){
@@ -77,7 +86,8 @@ boatVector fillBoats(const matrix& data, size_t nboats, size_t nseats){
         p.setImportant();
         passengers.push_back(p);
     }
-    std::sort(passengers.begin(), passengers.end(), compP);
+//    std::sort(passengers.begin(), passengers.end(), compP);
+    std::sort(passengers.begin(), passengers.end(), std::greater <Passenger>());
     boatVector boats;
     for (size_t i=0; i<nboats; i++){
         std::vector<Passenger> seats;
@@ -89,12 +99,18 @@ boatVector fillBoats(const matrix& data, size_t nboats, size_t nseats){
     return boats;
 }
 
+std::ostream& operator << (std::ostream& stream, const Passenger& passenger){
+    stream << passenger.id << '\t' << passenger.name << '\t' << passenger.value;
+    return stream;
+}
+
 void printBoats(const boatVector& boats){
     for (size_t i=0; i<boats.size(); i++){
         std::cout << i << '\n';
        std::vector<Passenger> passengers = boats[i];
        for (const Passenger& x: passengers){
-        std::cout << x.id << '\t' << x.name << '\t' << x.value << '\n';
+//        std::cout << x.id << '\t' << x.name << '\t' << x.value << '\n';
+            std::cout << x << '\n';
        }
     }
 }

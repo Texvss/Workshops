@@ -24,6 +24,8 @@ struct Passenger
     int age;
     double value;
     void setImportant();
+    bool operator < (const Passenger&) const;
+    bool operator > (const Passenger&) const;
 };
 typedef std::vector<std::vector<Passenger>> boatVector;
 boatVector fillBoats(const matrix&, size_t, size_t);
